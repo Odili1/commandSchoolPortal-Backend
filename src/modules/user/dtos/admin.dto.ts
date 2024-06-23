@@ -2,9 +2,7 @@ import { IsEnum, IsOptional, IsString } from "class-validator";
 
 
 
-
-
-export class CreateUserDto{
+export class CreateAdminDto{
     @IsString()
     readonly username: string
 
@@ -16,6 +14,15 @@ export class CreateUserDto{
     @IsOptional()
     readonly role?: string
 }
+
+
+// export class LoginAdminDto{
+//     @IsString()
+//     readonly adminId: string
+
+//     @IsString()
+//     readonly password: string
+// }
 
 
 

@@ -25,7 +25,8 @@ export const envConfig = {
     DB_USERNAME: getEnvString('DB_USER'),
     DB_TYPE: getEnvString('DB_TYPE'),
     DB_PASSWORD: getEnvString('DB_PASSWORD'),
-    DB_PORT: getEnvNumber('DB_PORT', 3306)
+    DB_PORT: getEnvNumber('DB_PORT', 3306),
+    DB_JWTSECRET: getEnvString('JWT_SECRET')
 }
 
 
