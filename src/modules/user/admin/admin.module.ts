@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AdminController } from './admin.controller';
-import { AdminService } from './admin.service';
+import { AdminController } from './controllers/admin.controller';
+import { AdminService } from './services/admin.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Admin } from './entities/admin.entity';
 import { PasswordService } from '../auth/password.service';
@@ -8,7 +8,7 @@ import { PasswordService } from '../auth/password.service';
 // import { UserService } from '../user.service';
 
 @Module({
-  imports: [ TypeOrmModule.forFeature([Admin])],
+  imports: [TypeOrmModule.forFeature([Admin])],
   controllers: [AdminController],
   providers: [AdminService, PasswordService],
   exports: [AdminService],

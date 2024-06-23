@@ -1,10 +1,14 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Admin } from './entities/admin.entity';
+import { Admin } from '../entities/admin.entity';
 import { Repository } from 'typeorm';
-import { CreateAdminDto } from '../dtos/admin.dto';
-import { PasswordService } from '../auth/password.service';
-import { IAdmin } from '../interfaces/admin.interface';
+import { CreateAdminDto } from '../../dtos/admin.dto';
+import { PasswordService } from '../../auth/password.service';
+import { IAdmin } from '../../interfaces/admin.interface';
 
 @Injectable()
 export class AdminService {
@@ -42,7 +46,7 @@ export class AdminService {
         password: passwordHash,
       });
 
-      await this.adminRepository.save(adminUser)
+      await this.adminRepository.save(adminUser);
 
       const { password, ...adminData } = adminUser;
 
@@ -52,17 +56,19 @@ export class AdminService {
     }
   }
 
-  async getAdminByAdminId(adminId: string): Promise<IAdmin>{
+  async getAdminByAdminId(adminId: string): Promise<IAdmin> {
     try {
-        const adminUser = this.adminRepository.findOne({where: {adminId: adminId}})
+      const adminUser = this.adminRepository.findOne({
+        where: { adminId: adminId },
+      });
 
-        if (!adminUser){
-            throw new NotFoundException('Invalid Credentials')
-        }
+      if (!adminUser) {
+        throw new NotFoundException('Invalid Credentials');
+      }
 
-        return adminUser
+      return adminUser;
     } catch (error) {
-        throw new InternalServerErrorException('ISE$Ad2: Internal Server Error');
+      throw new InternalServerErrorException('ISE$Ad2: Internal Server Error');
     }
   }
 }
