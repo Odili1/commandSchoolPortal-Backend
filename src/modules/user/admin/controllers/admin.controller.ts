@@ -10,17 +10,19 @@ import { AdminService } from '../services/admin.service';
 import { IAdmin } from '../../interfaces/admin.interface';
 import { RoleGuard } from 'src/common/guards/role.guard';
 import { Role } from 'src/common/decorators/role.decorator';
+import { Public } from 'src/common/decorators/auth.decorator';
 
 @UseGuards(RoleGuard)
-@Role('student', 'admin')
+@Role('admin')
 @Controller('admin')
 export class AdminController {
   constructor(private adminService: AdminService) {}
 
+  @Public(true)
   @Post('/create')
   async createAdmin(@Body() createAdminDto: CreateAdminDto): Promise<IAdmin> {
     try {
-      console.log(createAdminDto);
+    //   console.log(createAdminDto);
       const createdAdmin = this.adminService.createAdmin(createAdminDto);
 
       return createdAdmin;

@@ -1,28 +1,39 @@
-import { IsEnum, IsOptional, IsString } from "class-validator";
+import { IsString } from "class-validator";
 
-
+export class CreateUserDto{
+    userId: string
+    password: string
+    email?: string
+    phoneNumber?: string
+    createdAt?: Date
+}
 
 export class CreateAdminDto{
     @IsString()
-    readonly username: string
+    readonly firstName: string
 
     @IsString()
-    readonly password: string
+    readonly lastName: string
 
-    @IsEnum(['admin', 'teacher', 'student', 'staff'])
-    @IsString()
-    @IsOptional()
-    readonly role?: string
+    readonly user?: CreateUserDto
+
+    // @IsString()
+    // readonly password: string
+
+    // @IsEnum(['admin', 'teacher', 'student', 'staff'])
+    // @IsString()
+    // @IsOptional()
+    // readonly role?: string
 }
 
 
-// export class LoginAdminDto{
-//     @IsString()
-//     readonly adminId: string
+export class LoginAdminDto{
+    @IsString()
+    readonly userId: string
 
-//     @IsString()
-//     readonly password: string
-// }
+    @IsString()
+    readonly password: string
+}
 
 
 

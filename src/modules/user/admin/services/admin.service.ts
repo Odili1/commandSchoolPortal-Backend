@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { CreateAdminDto } from '../../dtos/admin.dto';
 import { PasswordService } from '../../auth/password.service';
 import { IAdmin } from '../../interfaces/admin.interface';
+import { UserService } from '../../combinedUsers/services/user.service';
 
 @Injectable()
 export class AdminService {
@@ -16,11 +17,19 @@ export class AdminService {
     @InjectRepository(Admin)
     private adminRepository: Repository<Admin>,
     private passwordService: PasswordService,
+    private userService: UserService
   ) {}
 
   async createAdmin(createAdminDto: CreateAdminDto): Promise<IAdmin> {
     try {
       console.log(`Admin Service`);
+      // New User Details
+      const {firstName, lastName, ...userDto} = createAdminDto
+      // if ('password' in userDto){
+      //   userDto.password = userDto.password
+      // }
+      console.log(`user: ${JSON.stringify(userDto['password'])}`);
+      
 
       const generateNumber = () => Math.round(Math.random() * 10);
       let number = generateNumber();
@@ -28,7 +37,7 @@ export class AdminService {
 
       // check if id is already used
       const admins = await this.adminRepository.find({});
-      const IDs = admins.map((admin) => admin.adminId);
+      const IDs = admins.map((admin) => admin.userId);
 
       while (IDs.includes(generateAdminId)) {
         console.log('generatedId:', generateAdminId);
@@ -36,30 +45,49 @@ export class AdminService {
         generateAdminId = `Ad13${number >= 10 ? `0${number}` : `00${number}`}`;
       }
 
+      // Hash Password
       const passwordHash = await this.passwordService.hashPassword(
-        createAdminDto.password,
+        userDto['password'],
       );
 
+
+      // Create user in the user's table
+      const newUserObject = {
+        userId: generateAdminId,
+        password: passwordHash
+      }
+
+      const savedUser = await this.userService.createUser(newUserObject)
+
+
       const adminUser = await this.adminRepository.create({
-        adminId: generateAdminId,
-        username: createAdminDto.username,
-        password: passwordHash,
+        userId: generateAdminId,
+        firstName: firstName,
+        lastName: lastName,
+        user: savedUser
       });
 
-      await this.adminRepository.save(adminUser);
+      const savedAdminUser = await this.adminRepository.save(adminUser);
 
-      const { password, ...adminData } = adminUser;
+      const {...adminData } = savedAdminUser;
+      // const {password, ...restData} = user
 
-      return adminData;
+      return {
+        ...adminData,
+        // ...restData
+      };
     } catch (error) {
-      throw new InternalServerErrorException('ISE$Ad1: Internal Server Error');
+      console.log(error);
+      
+      throw new InternalServerErrorException();
     }
   }
 
   async getAdminByAdminId(adminId: string): Promise<IAdmin> {
     try {
       const adminUser = this.adminRepository.findOne({
-        where: { adminId: adminId },
+        where: { userId: adminId },
+        relations: ['user']
       });
 
       if (!adminUser) {

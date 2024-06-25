@@ -24,20 +24,23 @@ export class AuthService {
   async validateUser(userId: string, password: string) {
     try {
       const idPrefix = idPrefixFunc(userId);
-
+      console.log('ValidateUser');
+      
       // Validate Admin Login
       if (idPrefix === 'Ad') {
         const adminUser = await this.adminService.getAdminByAdminId(userId);
-
+        
+        console.log('adminDetails:', adminUser);
         if (!adminUser) {
           throw new NotFoundException('Invalid Credentials');
         }
-
+        
+        console.log('validPasswod:', adminUser.user.password);
         const validPassword = await this.passwordService.validPassword(
           password,
-          adminUser.password,
+          adminUser.user.password,
         );
-
+        
         if (!validPassword) {
           throw new BadRequestException('Invalid Username or Password');
         }
@@ -71,27 +74,21 @@ export class AuthService {
         // }
       }
     } catch (error) {
-      throw new InternalServerErrorException('Internal Server Error');
+      console.log(error);
+      
+      throw new InternalServerErrorException('ISE$AUTH1Internal Server Error');
     }
   }
 
   async generateAccessToken(
-    user: CombinedUsersInterface | any,
-    prefix: string,
+    user: CombinedUsersInterface | any
   ): Promise<{ access_token: string }> {
+    console.log('Generate Token');
+    
     // *** user can have a type of IAdmin | IStudent | ITeacher | IStaff
     const payload = {
       id: user.id,
-      userId:
-        user[
-          prefix == 'Ad'
-            ? 'adminId'
-            : prefix == 'Th'
-              ? 'teacherId'
-              : prefix == 'St'
-                ? 'studentId'
-                : 'staffId'
-        ],
+      userId: user['userId'],
     };
 
     const access_token = await this.jwtService.signAsync(payload);

@@ -87,12 +87,13 @@ export class AuthController{
             }
 
             // login user
-            return await this.authservice.generateAccessToken(user, idPrefix)
+            return await this.authservice.generateAccessToken(user)
         } catch (error) {
             if (error instanceof BadRequestException){
                 throw new BadRequestException('Invalid input data')
             }
-
+            console.log(error);
+            
             throw new Error(error) 
         }
     }

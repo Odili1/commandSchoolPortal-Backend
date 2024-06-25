@@ -3,30 +3,26 @@ import {
   Column,
   BaseEntity,
   PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
-// import { User } from '../../user.entity';
+import { User } from '../../combinedUsers/entities/user.entity';
 
 @Entity()
 export class Admin extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({unique: true})
-  adminId: string;
-
-  @Column({unique: true})
-  username: string;
+  @Column()
+  userId: string
 
   @Column()
-  password: string;
+  firstName: string
 
-  @Column({nullable: true})
-  email: string;
+  @Column()
+  lastName: string
 
-  // @Column({
-  //   type: 'enum',
-  //   enum: ['admin', 'student', 'teacher', 'staff'],
-  // })
-  // role: string;
-
+  @OneToOne(() => User, (user) => user.admin)
+  @JoinColumn({name: 'userDetails'})
+  user: User
 }

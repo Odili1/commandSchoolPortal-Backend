@@ -6,17 +6,18 @@ import { AuthService } from "./auth/auth.service";
 import { PasswordService } from "./auth/password.service";
 import { APP_GUARD } from "@nestjs/core";
 import { AuthGuard } from "src/common/guards/auth.guard";
+import { UserModule } from "./combinedUsers/user.module";
 
 
 
 @Module({
-    imports: [AdminModule],
+    imports: [AdminModule, UserModule],
     controllers: [AuthController],
     providers: [AuthService, PasswordService, {
         provide: APP_GUARD,
         useClass: AuthGuard
     }],
-    exports: [AdminModule]
+    exports: [AdminModule, UserModule]
 })
 
 export class UsersParentModule{}
