@@ -32,7 +32,13 @@ export class AuthService {
         
         console.log('adminDetails:', adminUser);
         if (!adminUser) {
-          throw new NotFoundException('Invalid Credentials');
+          // throw new Error(JSON.stringify({
+          //   message: 'Invalid Credentials',
+          //   error: 'Bad Request',
+          //   statusCode: 400
+          // }))
+          throw new  NotFoundException('Invalid Credentials');
+          
         }
         
         console.log('validPasswod:', adminUser.user.password);
@@ -74,15 +80,26 @@ export class AuthService {
         // }
       }
     } catch (error) {
+      console.log(error.response);
+      // console.log(error.response.message);
+      // console.log(error.response.error);
+      // console.log(error.response.statusCode);
       console.log(error);
+      if (error instanceof NotFoundException){
+        throw new NotFoundException(error)
+      }
+
+      if (error instanceof BadRequestException){
+        throw new BadRequestException(error)
+      }
       
-      throw new InternalServerErrorException('ISE$AUTH1Internal Server Error');
+      throw new InternalServerErrorException('ISE$auth1: Internal Server Error')
     }
   }
 
   async generateAccessToken(
     user: CombinedUsersInterface | any
-  ): Promise<{ access_token: string }> {
+  ): Promise<{userId: string, access_token: string }> {
     console.log('Generate Token');
     
     // *** user can have a type of IAdmin | IStudent | ITeacher | IStaff
@@ -93,8 +110,12 @@ export class AuthService {
 
     const access_token = await this.jwtService.signAsync(payload);
 
+    console.log(`Token: ${JSON.stringify(access_token)}`);
+    
+
     return {
-      access_token: access_token,
+      userId: user['userId'],
+      access_token: access_token
     };
   }
 }

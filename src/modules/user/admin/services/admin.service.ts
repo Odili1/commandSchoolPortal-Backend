@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -79,7 +80,7 @@ export class AdminService {
     } catch (error) {
       console.log(error);
       
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException('ISE$Ad1: Internal Server Error');
     }
   }
 
@@ -96,6 +97,14 @@ export class AdminService {
 
       return adminUser;
     } catch (error) {
+      if (error instanceof NotFoundException){
+        throw new NotFoundException(error)
+      }
+
+      if (error instanceof BadRequestException){
+        throw new BadRequestException(error)
+      }
+
       throw new InternalServerErrorException('ISE$Ad2: Internal Server Error');
     }
   }

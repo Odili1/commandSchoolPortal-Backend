@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
 import { CreateUserDto } from "../../dtos/admin.dto";
@@ -31,12 +31,21 @@ export class UserService{
 
     async getAllUser(): Promise<User[]>{
         try {
-            const users = this.userRepository.find({relations: ['admin']})
+            const users = await this.userRepository.find({relations: ['admin']})
+
+            if (users.length === 0){
+                throw new NotFoundException('No Users Found')
+            }
 
             return users
         } catch (error) {
             console.log(error);
-            throw new InternalServerErrorException('ISE$USER1: Internal Server Error')
+            if (error instanceof NotFoundException){
+                throw new NotFoundException(error)
+            }
+        
+
+            throw new InternalServerErrorException('ISE$USER2: Internal Server Error')
         }
     }
 }

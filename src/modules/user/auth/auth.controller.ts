@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, NotFoundException, Post } from "@nestjs/common";
 // import { CreateAdminDto } from "../dtos/admin.dto";
 // import { AdminService } from "../admin/admin.service";
 // import { IAdmin } from "../interfaces/admin.interface";
@@ -77,24 +77,25 @@ export class AuthController{
             // Check Id Input
             const idPrefix = idPrefixFunc(userId)
             if (!validIdPrefix(idPrefix)){
-                throw new BadRequestException('Inalid id Prefix')
+                throw new BadRequestException('Invalid Id Prefix')
             }
 
             const user = await this.authservice.validateUser(userId, password)
-
-            if (!user){
-                throw new BadRequestException('Invalid input data')
-            }
 
             // login user
             return await this.authservice.generateAccessToken(user)
         } catch (error) {
             if (error instanceof BadRequestException){
-                throw new BadRequestException('Invalid input data')
+                console.log(error);
+                throw new BadRequestException(error)
             }
             console.log(error);
             
-            throw new Error(error) 
+            if (error instanceof NotFoundException){
+                throw new NotFoundException(error)
+            }
+
+            throw new Error(error)
         }
     }
 }
