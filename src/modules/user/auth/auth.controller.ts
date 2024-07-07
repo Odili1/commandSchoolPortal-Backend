@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, NotFoundException, Post } from "@nestjs/common";
+import { BadRequestException, Body, Controller, NotFoundException, Post, Res } from "@nestjs/common";
 // import { CreateAdminDto } from "../dtos/admin.dto";
 // import { AdminService } from "../admin/admin.service";
 // import { IAdmin } from "../interfaces/admin.interface";
@@ -6,6 +6,7 @@ import { LoginDto } from "../dtos/login.dto";
 import { AuthService } from "./auth.service";
 import { idPrefixFunc, validIdPrefix } from "src/common/helpers/idPrefix.helper";
 import { Public } from "src/common/decorators/auth.decorator";
+import { Response } from "express";
 
 
 @Controller('auth')
@@ -70,7 +71,7 @@ export class AuthController{
     // ---------- LOGIN ROUTES ----------
     @Public(true)
     @Post('/login')
-    async login(@Body() loginDto: LoginDto): Promise<any>{
+    async login(@Body() loginDto: LoginDto, @Res({passthrough: true}) res: Response): Promise<any>{
         try {
             const {userId, password} = loginDto
 
@@ -82,8 +83,17 @@ export class AuthController{
 
             const user = await this.authservice.validateUser(userId, password)
 
-            // login user
-            return await this.authservice.generateAccessToken(user)
+            // Genenrate Token
+            const token = await this.authservice.generateAccessToken(user)
+
+            // Set token in cookie
+            res.cookie('access_token', token, {
+                maxAge: 24 * 60 * 60 * 1000,
+            })
+
+            return {
+                userId: userId
+            }
         } catch (error) {
             if (error instanceof BadRequestException){
                 console.log(error);

@@ -99,7 +99,7 @@ export class AuthService {
 
   async generateAccessToken(
     user: CombinedUsersInterface | any
-  ): Promise<{userId: string, access_token: string }> {
+  ): Promise<string> {
     console.log('Generate Token');
     
     // *** user can have a type of IAdmin | IStudent | ITeacher | IStaff
@@ -113,9 +113,10 @@ export class AuthService {
     console.log(`Token: ${JSON.stringify(access_token)}`);
     
 
-    return {
-      userId: user['userId'],
-      access_token: access_token
-    };
+    // return {
+    //   userId: user['userId'],
+    //   access_token: access_token
+    // };
+    return access_token
   }
 }
