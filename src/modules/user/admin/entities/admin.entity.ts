@@ -25,4 +25,5 @@ export class Admin extends BaseEntity {
   @OneToOne(() => User, (user) => user.admin)
   @JoinColumn({name: 'userDetails'})
   user: User
+
 }
