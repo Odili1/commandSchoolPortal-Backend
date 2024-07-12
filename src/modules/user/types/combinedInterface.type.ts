@@ -1,8 +1,5 @@
-import { IAdmin } from "../interfaces/admin.interface";
-import { IStudent } from "../interfaces/student.interface";
-import { ITeacher } from "../interfaces/teacher.interface";
+import { IAdmin } from '../interfaces/users.interface';
+import { IStudent } from '../interfaces/users.interface'; 
+import { ITeacher } from '../interfaces/users.interface'; 
 
-
-export type CombinedUsersInterface = IAdmin  | IStudent | ITeacher
-
-
+export type CombinedUsersInterface = IAdmin | IStudent | ITeacher;

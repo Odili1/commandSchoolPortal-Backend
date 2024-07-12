@@ -12,6 +12,7 @@ import { PasswordService } from './password.service';
 // import { IStudent } from "../interfaces/student.interface";
 import { CombinedUsersInterface } from '../types/combinedInterface.type';
 import { idPrefixFunc } from 'src/common/helpers/idPrefix.helper';
+import { StudentService } from '../student/services/student.service';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
     private jwtService: JwtService,
     private adminService: AdminService,
     private passwordService: PasswordService,
+    private studentService: StudentService
   ) {}
 
   async validateUser(userId: string, password: string) {
@@ -28,20 +30,11 @@ export class AuthService {
       
       // Validate Admin Login
       if (idPrefix === 'Ad') {
-        const adminUser = await this.adminService.getAdminByAdminId(userId);
+        const adminUser = await this.adminService.getAdminById(userId);
         
         console.log('adminDetails:', adminUser);
-        if (!adminUser) {
-          // throw new Error(JSON.stringify({
-          //   message: 'Invalid Credentials',
-          //   error: 'Bad Request',
-          //   statusCode: 400
-          // }))
-          throw new  NotFoundException('Invalid Credentials');
-          
-        }
         
-        console.log('validPasswod:', adminUser.user.password);
+        console.log('validPassword:', adminUser.user.password);
         const validPassword = await this.passwordService.validPassword(
           password,
           adminUser.user.password,
@@ -69,15 +62,21 @@ export class AuthService {
 
       // Validate Student Login
       if (idPrefix === 'St') {
-        // ---- CHANGE THIS CODE -----
-        // const adminUser = await this.adminService.getAdminByAdminId(id)
-        // if (!adminUser){
-        //     throw new NotFoundException('Invalid Credentials')
-        // }
-        // const validPassword = await this.passwordService.validPassword(password, adminUser.password)
-        // if (!validPassword){
-        //     throw new BadRequestException('Invalid Username or Password')
-        // }
+        const studentUser = await this.studentService.getStudentById(userId)
+        
+        console.log('adminDetails:', studentUser);
+        
+        console.log('validPassword:', studentUser.user.password);
+        const validPassword = await this.passwordService.validPassword(
+          password,
+          studentUser.user.password,
+        );
+        
+        if (!validPassword) {
+          throw new BadRequestException('Invalid Username or Password');
+        }
+
+        return studentUser;
       }
     } catch (error) {
       console.log(error.response);

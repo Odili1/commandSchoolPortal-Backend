@@ -1,12 +1,5 @@
-import { IsString } from "class-validator";
-
-export class CreateUserDto{
-    userId: string
-    password: string
-    email?: string
-    phoneNumber?: string
-    createdAt?: Date
-}
+import { IsOptional, IsString } from "class-validator";
+import { CreateUserDto } from "./user.dto";
 
 export class CreateAdminDto{
     @IsString()
@@ -16,23 +9,23 @@ export class CreateAdminDto{
     readonly lastName: string
 
     readonly user?: CreateUserDto
-
-    // @IsString()
-    // readonly password: string
-
-    // @IsEnum(['admin', 'teacher', 'student', 'staff'])
-    // @IsString()
-    // @IsOptional()
-    // readonly role?: string
 }
 
 
-export class LoginAdminDto{
+export class AdminProfileDto{
     @IsString()
-    readonly userId: string
+    @IsOptional()
+    readonly firstName: string
 
     @IsString()
-    readonly password: string
+    @IsOptional()
+    readonly lastName: string
+
+    @IsString()
+    @IsOptional()
+    readonly changePassword: string
+    
+    readonly user?: CreateUserDto
 }
 
 

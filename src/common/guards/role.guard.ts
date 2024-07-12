@@ -28,6 +28,7 @@ export class RoleGuard implements CanActivate{
 
 
         const userRole = roleFromIdPrefix(user.userId)
+        console.log(`Authorized Role: ${role.includes(userRole)}`);
         
         return role.includes(userRole)
     }

@@ -2,6 +2,6 @@ import { envConfig } from "src/config/envConfig"
 
 export const jwtConfig = {
     global: true,
-    secret: envConfig.DB_JWTSECRET,
-    signOptions: {expiresIn: '60s'}
+    secret: envConfig.JWT_SECRET,
+    signOptions: {expiresIn: '1h'}
 }

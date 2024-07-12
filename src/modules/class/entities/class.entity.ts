@@ -13,14 +13,17 @@ export class Class extends BaseEntity{
     @Column()
     name: string
 
-    @OneToMany(()=> Student, (student) => student.class)
+    @Column({nullable: true})
+    formTeacher: string
+
+    @OneToMany(()=> Student, (student) => student.classDetails, {nullable: true})
     students: Student[]
 
-    @ManyToMany(()=> Subject, (subject) => subject.classes)
+    @ManyToMany(()=> Subject, (subject) => subject.classDetails, {nullable: true})
     @JoinTable()
     subjects: Subject[]
 
-    @ManyToMany(() => Teacher, (teacher) => teacher.classes)
+    @ManyToMany(() => Teacher, (teacher) => teacher.classDetails, {nullable: true})
     teachers: Teacher[]
 
     @Column()

@@ -4,6 +4,7 @@ import { StudentService } from "./services/student.service";
 import { UserModule } from "../combinedUsers/user.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Student } from "./entities/student.entity";
+import { PasswordService } from "../auth/password.service";
 
 
 
@@ -11,7 +12,7 @@ import { Student } from "./entities/student.entity";
 @Module({
     imports: [UserModule, TypeOrmModule.forFeature([Student])],
     controllers: [StudentController],
-    providers: [StudentService],
-    exports: []
+    providers: [StudentService, PasswordService],
+    exports: [StudentService]
 })
 export class StudentModule {}

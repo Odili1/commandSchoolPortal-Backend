@@ -19,22 +19,19 @@ export class Teacher extends BaseEntity{
     @Column()
     lastName: string
 
+    @Column({nullable: true})
+    formClass: string
+
     @OneToOne(() => User, (user) => user.student)
-    @JoinColumn()
+    @JoinColumn({name: 'userDetails'})
     user: User
 
-    @ManyToMany(() => Subject, (subject) => subject.teachers)
+    @ManyToMany(() => Subject, (subject) => subject.teachers, {nullable: true})
     @JoinTable()
     subjects: Subject[]
 
-    @ManyToMany(() => Class, (classEntity) => classEntity.teachers)
+    @ManyToMany(() => Class, (classEntity) => classEntity.teachers, {nullable: true})
     @JoinTable()
-    classes: Class[]
-
-    // constructor(){
-    //     super()
-    //     this.subjects = []
-    //     this.classes = []
-    // }
+    classDetails: Class[]
 }
 

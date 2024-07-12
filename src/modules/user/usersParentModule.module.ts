@@ -7,17 +7,19 @@ import { PasswordService } from "./auth/password.service";
 import { APP_GUARD } from "@nestjs/core";
 import { AuthGuard } from "src/common/guards/auth.guard";
 import { UserModule } from "./combinedUsers/user.module";
+import { StudentModule } from "./student/student.module";
+import { CloudinaryService } from "src/integration/cloudinary/cloudinary.service";
 
 
 
 @Module({
-    imports: [AdminModule, UserModule],
+    imports: [AdminModule, UserModule, StudentModule],
     controllers: [AuthController],
-    providers: [AuthService, PasswordService, {
+    providers: [AuthService, PasswordService, CloudinaryService, {
         provide: APP_GUARD,
         useClass: AuthGuard
     }],
-    exports: [AdminModule, UserModule]
+    exports: [AdminModule, UserModule, StudentModule]
 })
 
 export class UsersParentModule{}

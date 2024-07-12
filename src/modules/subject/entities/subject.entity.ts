@@ -14,13 +14,13 @@ export class Subject extends BaseEntity{
     @Column()
     name: string
 
-    @ManyToMany(() => Student, (student) => student.subjects)
+    @ManyToMany(() => Student, (student) => student.subjects, {nullable: true})
     students: Student[]
 
-    @ManyToMany(() => Class, (classEntity) => classEntity.subjects)
-    classes: Class[]
+    @ManyToMany(() => Class, (classEntity) => classEntity.subjects, {nullable: true})
+    classDetails: Class[]
 
-    @ManyToMany(() => Teacher, (teacher) => teacher.subjects)
+    @ManyToMany(() => Teacher, (teacher) => teacher.subjects, {nullable: true})
     teachers: Teacher[]
 
     @Column()

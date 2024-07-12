@@ -3,7 +3,7 @@ import { User } from "../../combinedUsers/entities/user.entity";
 import { Subject } from "src/modules/subject/entities/subject.entity";
 import { Class } from "src/modules/class/entities/class.entity";
 
-enum Gender{
+export enum Gender{
     male='male',
     female='female',
 }
@@ -41,22 +41,16 @@ export class Student extends BaseEntity{
     stateOfOrigin: string
 
     @OneToOne(() => User, (user) => user.student)
-    @JoinColumn()
+    @JoinColumn({name: 'userDetails'})
     user: User
 
-    @ManyToMany(() => Subject, (subject) => subject.students)
+    @ManyToMany(() => Subject, (subject) => subject.students, {nullable: true})
     @JoinTable()
     subjects: Subject[]
 
-    @ManyToOne(() => Class, (classEntity) => classEntity.students)
-    @JoinColumn()
-    class: Class
-
-
-    // constructor(){
-    //     super()
-    //     this.subjects = []
-    // }
+    @ManyToOne(() => Class, (classEntity) => classEntity.students, {nullable: true})
+    @JoinColumn({name: 'classDetails'})
+    classDetails: Class
 }
 
 

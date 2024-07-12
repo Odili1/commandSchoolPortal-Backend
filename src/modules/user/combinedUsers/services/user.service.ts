@@ -1,8 +1,11 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
-import { CreateUserDto } from "../../dtos/admin.dto";
+import { CreateUserDto } from "../../dtos/user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
+import { instanceToPlain } from "class-transformer";
+// import { IUser } from "../../interfaces/users.interface";
+import { PasswordService } from "../../auth/password.service";
 
 
 
@@ -11,25 +14,31 @@ import { InjectRepository } from "@nestjs/typeorm";
 export class UserService{
     constructor(
         @InjectRepository(User)
-        private userRepository: Repository<User>
+        private userRepository: Repository<User>,
+        private passwordService: PasswordService
     ){}
 
 
     async createUser(createUserDto: CreateUserDto){
         try {
             // Create user in the user's table
-            createUserDto.createdAt = new Date()
+            const newUserDto = {...createUserDto}
+            newUserDto.createdAt = new Date()
+            newUserDto.updatedAt = new Date()
+            console.log(`createNewUser: ${JSON.stringify(newUserDto)}`);
+            
             const newUser = this.userRepository.create(createUserDto)
 
-            return await this.userRepository.save(newUser)
+            const savedUser = await this.userRepository.save(newUser)
             
+            return savedUser
         } catch (error) {
             console.log(error);
             throw new InternalServerErrorException('ISE$USER1: Internal Server Error')
         }
     }
 
-    async getAllUser(): Promise<User[]>{
+    async getAllUser(): Promise<any>{
         try {
             const users = await this.userRepository.find({relations: ['admin']})
 
@@ -37,7 +46,7 @@ export class UserService{
                 throw new NotFoundException('No Users Found')
             }
 
-            return users
+            return instanceToPlain(users)
         } catch (error) {
             console.log(error);
             if (error instanceof NotFoundException){
@@ -48,6 +57,26 @@ export class UserService{
             throw new InternalServerErrorException('ISE$USER2: Internal Server Error')
         }
     }
+
+    async updateLastLogin(userId: number): Promise<void> {
+        await this.userRepository.update(userId, { lastLogin: new Date() });
+    }
+
+    // async updateUser(userId: string, updateData: UserUpdateDto, file: Express.Multer.File): Promise<IUser>{
+    //     try {
+    //         if (updateData['changePassword']) {
+    //             console.log(`Change Password: ${updateData['changePassword']}`);
+                
+    //             updateData['password'] = this.passwordService.hashPassword(updateData['changePassword'])
+    //         }
+
+    //         if (file){
+
+    //         }
+    //     } catch (error) {
+    //         throw new InternalServerErrorException(error)
+    //     }
+    // }
 }
 
 
