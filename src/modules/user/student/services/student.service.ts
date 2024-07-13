@@ -2,7 +2,6 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../entities/student.entity';
 import { Repository } from 'typeorm';
-import { PasswordService } from '../../auth/password.service';
 import { UserService } from '../../combinedUsers/services/user.service';
 import { CreateStudentDto } from '../../dtos/student.dto';
 import { IStudent } from '../../interfaces/users.interface';
@@ -13,7 +12,6 @@ export class StudentService {
     constructor(
         @InjectRepository(Student)
         private studentRepository: Repository<Student>,
-        private passwordService: PasswordService,
         private userService: UserService,
     ) {}
 
@@ -50,15 +48,10 @@ export class StudentService {
             generateStudentId = `St13${number >= 100 ? number : number >= 100 ? `0${number}` : `00${number}`}`;
         }
 
-        // Hash Password
-        const hashedPassword = await this.passwordService.hashPassword(
-            userDto['password'],
-        );
-
         // Create Student in User Table
         const newUserObject = {
             userId: generateStudentId,
-            password: hashedPassword,
+            password: userDto['password'],
             email: userDto['email'] || null,
             phoneNumber: userDto['phoneNumber'] || null,
         };
@@ -94,6 +87,8 @@ export class StudentService {
                 where: { userId: studentId },
                 relations: ['user'],
             });
+            
+            console.log(`Student User By Id: ${JSON.stringify(studentUser)}`);
             
             if (!studentUser) {
                 throw new NotFoundException('Invalid Credentials');

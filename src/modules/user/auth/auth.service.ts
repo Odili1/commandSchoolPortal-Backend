@@ -33,6 +33,10 @@ export class AuthService {
         const adminUser = await this.adminService.getAdminById(userId);
         
         console.log('adminDetails:', adminUser);
+
+        if (!adminUser){
+          throw new NotFoundException('Invalid Credentials')
+        }
         
         console.log('validPassword:', adminUser.user.password);
         const validPassword = await this.passwordService.validPassword(
@@ -64,7 +68,11 @@ export class AuthService {
       if (idPrefix === 'St') {
         const studentUser = await this.studentService.getStudentById(userId)
         
-        console.log('adminDetails:', studentUser);
+        console.log('studentDetails:', studentUser);
+
+        if (!studentUser){
+          throw new NotFoundException('Invalid Credentials')
+        }
         
         console.log('validPassword:', studentUser.user.password);
         const validPassword = await this.passwordService.validPassword(

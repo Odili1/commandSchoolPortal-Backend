@@ -7,8 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin } from '../entities/admin.entity';
 import { Repository } from 'typeorm';
-import { CreateAdminDto } from '../../dtos/admin.dto';
-import { PasswordService } from '../../auth/password.service';
+import { updateAdminDto, CreateAdminDto } from '../../dtos/admin.dto';
 import { IAdmin } from '../../interfaces/users.interface';
 import { UserService } from '../../combinedUsers/services/user.service';
 import { instanceToPlain } from 'class-transformer';
@@ -18,7 +17,6 @@ export class AdminService {
   constructor(
     @InjectRepository(Admin)
     private adminRepository: Repository<Admin>,
-    private passwordService: PasswordService,
     private userService: UserService,
   ) {}
 
@@ -47,15 +45,10 @@ export class AdminService {
         generateAdminId = `Ad13${number >= 10 ? `0${number}` : `00${number}`}`;
       }
 
-      // Hash Password
-      const passwordHash = await this.passwordService.hashPassword(
-        userDto['password'],
-      );
-
       // Create user in the user's table
       const newUserObject = {
         userId: generateAdminId,
-        password: passwordHash,
+        password: userDto['password'],
       };
 
       const savedUser = await this.userService.createUser(newUserObject);
@@ -90,7 +83,9 @@ export class AdminService {
         relations: ['user'],
       });
 
-      if (!adminUser) {
+      if (adminUser === null) {
+        console.log('this is an error');
+        
         throw new NotFoundException('Invalid Credentials');
       }
 
@@ -127,17 +122,38 @@ export class AdminService {
     }
   }
 
-  // async updateAdmin(id: string, file?: Express.Multer.File, adminProfileDto: AdminProfileDto): Promise<IAdmin>{
-  //   try {
-  //     if (adminProfileDto['changePassword']){
-  //       // Hash the new password
-  //       console.log(`Change password: ${adminProfileDto['changePassword']}`);
-  //       adminProfileDto['password'] = await this.passwordService.hashPassword(adminProfileDto['changePassword'])
-  //     }
+  async updateAdmin(userId: string, adminProfileDto: updateAdminDto, file?: Express.Multer.File): Promise<any>{
+    try {
+      console.log(`Admin Service => file received: ${file.originalname}`);
+      const {firstName, lastName, ...userUpdateDto} = adminProfileDto
 
-  //     return
-  //   } catch (error) {
-  //     throw new InternalServerErrorException(error)
-  //   }
-  // }
+      const updateUserObject = {
+        userId,
+        changePassword: userUpdateDto['changePassword'] || null,
+        email: userUpdateDto['email'] || null,
+        phoneNumber: userUpdateDto['phoneNumber'] || null
+      }
+
+      // Update the user in the user table
+      const updatedUser = await this.userService.updateUser(updateUserObject, file)
+
+      // Update user in the Admin table
+      const adminUser = await this.adminRepository.findOne({where: {userId: userId}})
+      
+      if (!adminUser) {
+        throw new NotFoundException(`User with ID ${userId} not found`);
+      }
+
+      // Save update
+      const update = {...adminUser, firstName, lastName, user: updatedUser}
+      const savedAdminUser = await this.adminRepository.save(update)
+
+      return savedAdminUser
+    } catch (error) {
+      if (error instanceof NotFoundException){
+        throw new NotFoundException(error)
+      }
+      throw new InternalServerErrorException('ISE$Ad4: Internal Server Error')
+    }
+  }
 }

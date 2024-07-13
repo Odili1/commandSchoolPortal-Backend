@@ -1,11 +1,12 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
-import { CreateUserDto } from "../../dtos/user.dto";
+import { CreateUserDto, updateUserDto } from "../../dtos/user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { instanceToPlain } from "class-transformer";
-// import { IUser } from "../../interfaces/users.interface";
+import { IUser } from "../../interfaces/users.interface";
 import { PasswordService } from "../../auth/password.service";
+import { CloudinaryService } from "src/integration/cloudinary/cloudinary.service";
 
 
 
@@ -15,7 +16,8 @@ export class UserService{
     constructor(
         @InjectRepository(User)
         private userRepository: Repository<User>,
-        private passwordService: PasswordService
+        private passwordService: PasswordService,
+        private cloudinaryService: CloudinaryService
     ){}
 
 
@@ -23,11 +25,17 @@ export class UserService{
         try {
             // Create user in the user's table
             const newUserDto = {...createUserDto}
+
+            // Hash password
+            newUserDto.password = await this.passwordService.hashPassword(createUserDto.password)
+
+            // Set Date
             newUserDto.createdAt = new Date()
             newUserDto.updatedAt = new Date()
+
             console.log(`createNewUser: ${JSON.stringify(newUserDto)}`);
             
-            const newUser = this.userRepository.create(createUserDto)
+            const newUser = this.userRepository.create(newUserDto)
 
             const savedUser = await this.userRepository.save(newUser)
             
@@ -40,7 +48,7 @@ export class UserService{
 
     async getAllUser(): Promise<any>{
         try {
-            const users = await this.userRepository.find({relations: ['admin']})
+            const users = await this.userRepository.find({relations: ['admin', 'teacher', 'student']})
 
             if (users.length === 0){
                 throw new NotFoundException('No Users Found')
@@ -62,21 +70,71 @@ export class UserService{
         await this.userRepository.update(userId, { lastLogin: new Date() });
     }
 
-    // async updateUser(userId: string, updateData: UserUpdateDto, file: Express.Multer.File): Promise<IUser>{
-    //     try {
-    //         if (updateData['changePassword']) {
-    //             console.log(`Change Password: ${updateData['changePassword']}`);
+    async updateUser(updateData: updateUserDto, file?: Express.Multer.File): Promise<IUser>{
+        try {
+            console.log(`User Service => file received: ${file.originalname}`);
+            // Copy the object
+            const updateUser = {...updateData}
+
+            if (updateUser['changePassword']) {
+                console.log(`Change Password: ${updateData['changePassword']}`);
                 
-    //             updateData['password'] = this.passwordService.hashPassword(updateData['changePassword'])
-    //         }
+                updateUser['password'] = await this.passwordService.hashPassword(updateData['changePassword'])
 
-    //         if (file){
+                console.log(`Changed Password Hash: ${updateUser['password']}`);
+                
+                delete updateUser['changePassword']
+            }
+            // Also Delete the property if none was inputed
+            delete updateUser['changePassword']
 
-    //         }
-    //     } catch (error) {
-    //         throw new InternalServerErrorException(error)
-    //     }
-    // }
+            // Check if picture is uploaded
+            if (file){
+                console.log(`File Received: ${file.originalname}`);
+                const avatar = await this.cloudinaryService.uploadFile(file).then((data) => {
+                    console.log(`avatarData: ${JSON.stringify(data)}`);
+
+                    return data.secure_url
+                }).catch((error) => {
+                    throw new BadRequestException(error)
+                })
+
+                updateUser['avatar'] = avatar
+            }
+
+            // modify the updatedDate
+            updateUser['updatedAt'] = new Date()
+
+            // Find User
+            const user = await this.userRepository.findOne({where: {userId: updateUser.userId}})
+
+            // if user does not exist
+            if (!user){
+                throw new NotFoundException(`User with Id ${updateData.userId} does not exist`)
+            }
+
+            // save user update data
+            const update = {...user, ...updateUser}
+            const savedUser = await this.userRepository.save(update)
+
+            console.log(`update user data: ${JSON.stringify(update)}`);
+            
+            console.log(`Updated User Table: ${JSON.stringify(savedUser)}`);
+            
+            
+            return savedUser
+        } catch (error) {
+            if (error instanceof BadRequestException){
+                throw new BadRequestException(error)
+            }
+
+            if (error instanceof NotFoundException){
+                throw new NotFoundException(error)
+            }
+
+            throw new InternalServerErrorException(error)
+        }
+    }
 }
 
 

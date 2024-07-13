@@ -2,20 +2,20 @@ import {
   BadRequestException,
   Body,
   Controller,
-  // Param,
+  Param,
   Post,
-  // Put,
-  // UploadedFile,
+  Put,
+  UploadedFile,
   UseGuards,
-  // UseInterceptors,
+  UseInterceptors,
 } from '@nestjs/common';
-import { CreateAdminDto } from '../../dtos/admin.dto';
+import { updateAdminDto, CreateAdminDto } from '../../dtos/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { IAdmin } from '../../interfaces/users.interface';
 import { RoleGuard } from 'src/common/guards/role.guard';
 import { Role } from 'src/common/decorators/role.decorator';
 import { Public } from 'src/common/decorators/auth.decorator';
-// import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(RoleGuard)
 @Role('admin')
@@ -40,9 +40,15 @@ export class AdminController {
     }
   }
 
-  // @Put('/:id/update')
-  // @UseInterceptors(FileInterceptor('avatar'))
-  // async updateAdmin(@UploadedFile() file: Express.Multer.File, @Param('id') id: string, @Body() adminProfileDto: AdminProfileDto): Promise<IAdmin>{
-  //   return this.adminService.updateAdmin(id, file, adminProfileDto)
-  // }
+  @Put('/:userId/update')
+  @UseInterceptors(FileInterceptor('avatar'))
+  async updateAdmin(@UploadedFile() file: Express.Multer.File, @Param('userId') userId: string, @Body() adminProfileDto: updateAdminDto): Promise<IAdmin>{
+    try {
+      console.log(`Admin Controller => file received: ${file.originalname}`);
+      
+      return this.adminService.updateAdmin(userId, adminProfileDto, file)
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
 }

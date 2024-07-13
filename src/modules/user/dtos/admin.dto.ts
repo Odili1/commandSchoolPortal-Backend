@@ -12,19 +12,19 @@ export class CreateAdminDto{
 }
 
 
-export class AdminProfileDto{
+export class updateAdminDto{
     @IsString()
     @IsOptional()
-    readonly firstName: string
+    readonly firstName?: string
 
     @IsString()
     @IsOptional()
-    readonly lastName: string
+    readonly lastName?: string
 
     @IsString()
     @IsOptional()
-    readonly changePassword: string
-    
+    readonly changePassword?: string
+
     readonly user?: CreateUserDto
 }
 
