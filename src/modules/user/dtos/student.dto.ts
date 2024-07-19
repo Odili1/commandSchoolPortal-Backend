@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Gender } from '../student/entities/student.entity';
 import { CreateUserDto } from './user.dto';
 import { IClass, ISubject } from '../interfaces/users.interface';
@@ -20,9 +20,9 @@ export class CreateStudentDto {
   @IsEnum(Gender)
   readonly gender: Gender;
 
-  @IsString()
+  @IsDate()
   @IsOptional()
-  readonly dateOfBirth?: string;
+  readonly dateOfBirth?: Date;
 
   @IsString()
   @IsOptional()

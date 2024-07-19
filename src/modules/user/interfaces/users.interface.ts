@@ -16,10 +16,14 @@ export interface IAdmin{
 
 
 export interface IStudent{
-    studentId?: string,
-    username?: string,
-    password?: string,
-    email?: string,
+    userId?: string,
+    firstName?: string,
+    lastName?: string,
+    age?: number,
+    gender?: 'male' | 'female',
+    dateOfBirth?: Date,
+    address?: string,
+    stateOfOrigin?: string,
     user: IUser,
     classDetails?: IClass
     subjects?: ISubject[]
@@ -31,6 +35,7 @@ export interface ITeacher{
     username?: string,
     password?: string,
     email?: string,
+    gender?: 'male' | 'female',
     user: IUser
     subjects?: ISubject[]
     classDetails?: IClass[]

@@ -72,7 +72,7 @@ export class UserService{
 
     async updateUser(updateData: updateUserDto, file?: Express.Multer.File): Promise<IUser>{
         try {
-            console.log(`User Service => file received: ${file.originalname}`);
+            console.log(`User Service => file received: ${JSON.stringify(file)}`);
             // Copy the object
             const updateUser = {...updateData}
 

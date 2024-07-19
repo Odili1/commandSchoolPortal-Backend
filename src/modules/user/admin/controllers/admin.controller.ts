@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Param,
   Post,
   Put,
@@ -16,6 +17,7 @@ import { RoleGuard } from 'src/common/guards/role.guard';
 import { Role } from 'src/common/decorators/role.decorator';
 import { Public } from 'src/common/decorators/auth.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { idPrefixFunc, validIdPrefix } from 'src/common/helpers/idPrefix.helper';
 
 @UseGuards(RoleGuard)
 @Role('admin')
@@ -40,11 +42,33 @@ export class AdminController {
     }
   }
 
-  @Put('/:userId/update')
-  @UseInterceptors(FileInterceptor('avatar'))
-  async updateAdmin(@UploadedFile() file: Express.Multer.File, @Param('userId') userId: string, @Body() adminProfileDto: updateAdminDto): Promise<IAdmin>{
+  @Get(':id')
+  async getStudent(@Param('id') adminId:string): Promise<IAdmin>{
     try {
-      console.log(`Admin Controller => file received: ${file.originalname}`);
+      console.log(`StudentController id: ${adminId}`)
+      // Check Id Input
+      const idPrefix = idPrefixFunc(adminId)
+      if (!validIdPrefix(idPrefix)){
+        throw new BadRequestException('Invalid Id Prefix')
+      }
+
+      const admin = await this.adminService.getAdminById(adminId)
+
+      return admin
+    } catch (error) {
+      if (error instanceof BadRequestException){
+        throw new BadRequestException(error)
+      }
+
+      throw new Error(error)
+    }
+  }
+
+  @Put('/update/:userId')
+  @UseInterceptors(FileInterceptor('avatar'))
+  async updateAdmin(@Param('userId') userId: string, @Body() adminProfileDto: updateAdminDto, @UploadedFile() file?: Express.Multer.File,): Promise<IAdmin>{
+    try {
+      console.log(`Admin Controller => file received: ${JSON.stringify(file)}`);
       
       return this.adminService.updateAdmin(userId, adminProfileDto, file)
     } catch (error) {

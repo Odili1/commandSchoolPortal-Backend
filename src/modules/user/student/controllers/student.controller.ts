@@ -54,6 +54,7 @@ export class StudentController{
     @Get(':id')
     async getStudent(@Param('id') studentId:string): Promise<IStudent>{
         try {
+            console.log(`StudentController id: ${studentId}`)
             // Check Id Input
             const idPrefix = idPrefixFunc(studentId)
             if (!validIdPrefix(idPrefix)){

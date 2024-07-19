@@ -72,7 +72,7 @@ export class AdminService {
     } catch (error) {
       console.log(error);
 
-      throw new InternalServerErrorException('ISE$Ad1: Internal Server Error');
+      throw new InternalServerErrorException(`ISE$Ad1: Internal Server Error: ${error}`);
     }
   }
 
@@ -88,7 +88,7 @@ export class AdminService {
         
         throw new NotFoundException('Invalid Credentials');
       }
-
+      console.log(`getAdminById: ${JSON.stringify(adminUser)}`)
       return adminUser;
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -99,7 +99,7 @@ export class AdminService {
         throw new BadRequestException(error);
       }
 
-      throw new InternalServerErrorException('ISE$Ad2: Internal Server Error');
+      throw new InternalServerErrorException(`ISE$Ad2: Internal Server Error ${error}`);
     }
   }
 
@@ -118,13 +118,13 @@ export class AdminService {
         throw new NotFoundException(error);
       }
 
-      throw new InternalServerErrorException('ISE$Ad3: Internal Server Error');
+      throw new InternalServerErrorException(`ISE$Ad3: Internal Server Error: ${error}`);
     }
   }
 
   async updateAdmin(userId: string, adminProfileDto: updateAdminDto, file?: Express.Multer.File): Promise<any>{
     try {
-      console.log(`Admin Service => file received: ${file.originalname}`);
+      console.log(`Admin Service => file received: ${JSON.stringify(file)}`);
       const {firstName, lastName, ...userUpdateDto} = adminProfileDto
 
       const updateUserObject = {
@@ -153,7 +153,7 @@ export class AdminService {
       if (error instanceof NotFoundException){
         throw new NotFoundException(error)
       }
-      throw new InternalServerErrorException('ISE$Ad4: Internal Server Error')
+      throw new InternalServerErrorException(`ISE$Ad4: Internal Server Error: ${error}`)
     }
   }
 }

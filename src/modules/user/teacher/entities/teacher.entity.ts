@@ -3,7 +3,10 @@ import { Subject } from "src/modules/subject/entities/subject.entity";
 import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "../../combinedUsers/entities/user.entity";
 
-
+export enum Gender{
+    male='male',
+    female='female',
+}
 
 @Entity()
 export class Teacher extends BaseEntity{
@@ -18,6 +21,9 @@ export class Teacher extends BaseEntity{
 
     @Column()
     lastName: string
+
+    @Column({type: 'enum', enum: Gender})
+    gender: Gender
 
     @Column({nullable: true})
     formClass: string
