@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { User } from "../entities/user.entity";
-import { CreateUserDto, updateUserDto } from "../../dtos/user.dto";
+import { CreateUserDto, UpdateUserDto } from "../../dtos/user.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { instanceToPlain } from "class-transformer";
 import { IUser } from "../../interfaces/users.interface";
@@ -70,7 +70,7 @@ export class UserService{
         await this.userRepository.update(userId, { lastLogin: new Date() });
     }
 
-    async updateUser(updateData: updateUserDto, file?: Express.Multer.File): Promise<IUser>{
+    async updateUser(updateData: UpdateUserDto, file?: Express.Multer.File): Promise<IUser>{
         try {
             console.log(`User Service => file received: ${JSON.stringify(file)}`);
             // Copy the object

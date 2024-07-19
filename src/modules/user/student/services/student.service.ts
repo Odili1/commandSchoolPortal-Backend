@@ -6,6 +6,7 @@ import { UserService } from '../../combinedUsers/services/user.service';
 import { CreateStudentDto } from '../../dtos/student.dto';
 import { IStudent } from '../../interfaces/users.interface';
 import { instanceToPlain } from 'class-transformer';
+import { calculateAge } from 'src/common/helpers/dates.helper';
 
 @Injectable()
 export class StudentService {
@@ -23,15 +24,14 @@ export class StudentService {
             firstName,
             middleName,
             lastName,
-            age,
             address,
             gender,
             stateOfOrigin,
             dateOfBirth,
-            ...userDto
+            user
         } = createStudentDto;
 
-        console.log(`Student Password: ${JSON.stringify(userDto['password'])}`);
+        console.log(`Student Password: ${JSON.stringify(user['password'])}`);
 
         // Generate Student ID
         const generateNumber = () => Math.round(Math.random() * 1000);
@@ -51,9 +51,9 @@ export class StudentService {
         // Create Student in User Table
         const newUserObject = {
             userId: generateStudentId,
-            password: userDto['password'],
-            email: userDto['email'] || null,
-            phoneNumber: userDto['phoneNumber'] || null,
+            password: user['password'],
+            email: user['email'] || null,
+            phoneNumber: user['phoneNumber'] || null,
         };
 
         const savedUser = await this.userService.createUser(newUserObject);
@@ -64,7 +64,7 @@ export class StudentService {
             firstName,
             middleName,
             lastName,
-            age,
+            age: calculateAge(dateOfBirth),
             gender,
             address,
             stateOfOrigin,

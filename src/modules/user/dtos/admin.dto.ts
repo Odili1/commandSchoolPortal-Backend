@@ -1,5 +1,6 @@
-import { IsOptional, IsString } from "class-validator";
-import { CreateUserDto } from "./user.dto";
+import { IsOptional, IsString, ValidateNested } from "class-validator";
+import { CreateUserDto, UpdateUserDto } from "./user.dto";
+import { Type } from "class-transformer";
 
 export class CreateAdminDto{
     @IsString()
@@ -25,7 +26,17 @@ export class updateAdminDto{
     @IsOptional()
     readonly changePassword?: string
 
-    readonly user?: CreateUserDto
+    // @IsEmail()
+    // @IsOptional()
+    // readonly email?: string
+
+    // @IsString()
+    // @IsOptional()
+    // readonly phoneNumber?: string
+
+    @ValidateNested({each: true})
+    @Type(() => UpdateUserDto)
+    readonly user?: UpdateUserDto
 }
 
 

@@ -24,11 +24,11 @@ export class AdminService {
     try {
       console.log(`Admin Service`);
       // New User Details
-      const { firstName, lastName, ...userDto } = createAdminDto;
+      const { firstName, lastName, user } = createAdminDto;
       // if ('password' in userDto){
       //   userDto.password = userDto.password
       // }
-      console.log(`user: ${JSON.stringify(userDto['password'])}`);
+      console.log(`user: ${JSON.stringify(user['password'])}`);
 
       // Generate Admin ID
       const generateNumber = () => Math.round(Math.random() * 10);
@@ -48,7 +48,9 @@ export class AdminService {
       // Create user in the user's table
       const newUserObject = {
         userId: generateAdminId,
-        password: userDto['password'],
+        password: user['password'],
+        email: user.email || null,
+        phoneNumber: user.phoneNumber || null
       };
 
       const savedUser = await this.userService.createUser(newUserObject);
@@ -125,13 +127,13 @@ export class AdminService {
   async updateAdmin(userId: string, adminProfileDto: updateAdminDto, file?: Express.Multer.File): Promise<any>{
     try {
       console.log(`Admin Service => file received: ${JSON.stringify(file)}`);
-      const {firstName, lastName, ...userUpdateDto} = adminProfileDto
+      const {firstName, lastName, user} = adminProfileDto
 
       const updateUserObject = {
         userId,
-        changePassword: userUpdateDto['changePassword'] || null,
-        email: userUpdateDto['email'] || null,
-        phoneNumber: userUpdateDto['phoneNumber'] || null
+        changePassword: user['changePassword'] || null,
+        email: user['email'] || null,
+        phoneNumber: user['phoneNumber'] || null
       }
 
       // Update the user in the user table

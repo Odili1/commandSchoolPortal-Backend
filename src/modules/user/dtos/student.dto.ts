@@ -1,7 +1,8 @@
-import { IsDate, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Gender } from '../student/entities/student.entity';
-import { CreateUserDto } from './user.dto';
+import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { IClass, ISubject } from '../interfaces/users.interface';
+import { Type } from 'class-transformer';
 
 export class CreateStudentDto {
   @IsString()
@@ -13,9 +14,6 @@ export class CreateStudentDto {
   @IsString()
   @IsOptional()
   readonly middleName?: string;
-
-  @IsNumber()
-  readonly age: number;
 
   @IsEnum(Gender)
   readonly gender: Gender;
@@ -33,7 +31,47 @@ export class CreateStudentDto {
   readonly address?: string;
 
   @IsOptional()
+  @Type(() => CreateStudentDto)
   readonly user?: CreateUserDto;
+
+  @IsOptional()
+  readonly classDetails?: IClass;
+
+  @IsOptional()
+  readonly subjects?: ISubject[];
+}
+
+
+
+export class UpdateStudentDto {
+  @IsString()
+  readonly firstName: string;
+
+  @IsString()
+  readonly lastName: string;
+
+  @IsString()
+  @IsOptional()
+  readonly middleName?: string;
+
+  @IsEnum(Gender)
+  readonly gender: Gender;
+
+  @IsDate()
+  @IsOptional()
+  readonly dateOfBirth?: Date;
+
+  @IsString()
+  @IsOptional()
+  readonly stateOfOrigin?: string;
+
+  @IsString()
+  @IsOptional()
+  readonly address?: string;
+
+  @IsOptional()
+  @Type(() => UpdateUserDto)
+  readonly user?: UpdateUserDto;
 
   @IsOptional()
   readonly classDetails?: IClass;

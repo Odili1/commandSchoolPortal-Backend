@@ -10,7 +10,7 @@ export class CreateUserDto{
 }
 
 
-export class updateUserDto {
+export class UpdateUserDto {
     readonly userId?: string
     avatar?: string
     readonly changePassword?: string
