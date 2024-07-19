@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Admin } from '../entities/admin.entity';
 import { Repository } from 'typeorm';
-import { updateAdminDto, CreateAdminDto } from '../../dtos/admin.dto';
+import { UpdateAdminDto, CreateAdminDto } from '../../dtos/admin.dto';
 import { IAdmin } from '../../interfaces/users.interface';
 import { UserService } from '../../combinedUsers/services/user.service';
 import { instanceToPlain } from 'class-transformer';
@@ -78,7 +78,7 @@ export class AdminService {
     }
   }
 
-  async getAdminById(adminId: string): Promise<IAdmin> {
+  async getAdminById(adminId: string): Promise<any> {
     try {
       const adminUser = this.adminRepository.findOne({
         where: { userId: adminId },
@@ -91,7 +91,7 @@ export class AdminService {
         throw new NotFoundException('Invalid Credentials');
       }
       console.log(`getAdminById: ${JSON.stringify(adminUser)}`)
-      return adminUser;
+      return instanceToPlain(adminUser);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error);
@@ -124,14 +124,13 @@ export class AdminService {
     }
   }
 
-  async updateAdmin(userId: string, adminProfileDto: updateAdminDto, file?: Express.Multer.File): Promise<any>{
+  async updateAdmin(userId: string, adminProfileDto: UpdateAdminDto, file?: Express.Multer.File): Promise<any>{
     try {
       console.log(`Admin Service => file received: ${JSON.stringify(file)}`);
       const {firstName, lastName, user} = adminProfileDto
 
       const updateUserObject = {
         userId,
-        changePassword: user['changePassword'] || null,
         email: user['email'] || null,
         phoneNumber: user['phoneNumber'] || null
       }

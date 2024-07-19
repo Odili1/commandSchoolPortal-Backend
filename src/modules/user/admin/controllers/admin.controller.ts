@@ -10,7 +10,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { updateAdminDto, CreateAdminDto } from '../../dtos/admin.dto';
+import { UpdateAdminDto, CreateAdminDto } from '../../dtos/admin.dto';
 import { AdminService } from '../services/admin.service';
 import { IAdmin } from '../../interfaces/users.interface';
 import { RoleGuard } from 'src/common/guards/role.guard';
@@ -66,7 +66,7 @@ export class AdminController {
 
   @Put('/update/:userId')
   @UseInterceptors(FileInterceptor('avatar'))
-  async updateAdmin(@Param('userId') userId: string, @Body() adminProfileDto: updateAdminDto, @UploadedFile() file?: Express.Multer.File,): Promise<IAdmin>{
+  async updateAdmin(@Param('userId') userId: string, @Body() adminProfileDto: UpdateAdminDto, @UploadedFile() file?: Express.Multer.File,): Promise<IAdmin>{
     try {
       console.log(`Admin Controller => file received: ${JSON.stringify(file)}`);
       

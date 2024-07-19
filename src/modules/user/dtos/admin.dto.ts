@@ -13,7 +13,7 @@ export class CreateAdminDto{
 }
 
 
-export class updateAdminDto{
+export class UpdateAdminDto{
     @IsString()
     @IsOptional()
     readonly firstName?: string
@@ -21,18 +21,6 @@ export class updateAdminDto{
     @IsString()
     @IsOptional()
     readonly lastName?: string
-
-    @IsString()
-    @IsOptional()
-    readonly changePassword?: string
-
-    // @IsEmail()
-    // @IsOptional()
-    // readonly email?: string
-
-    // @IsString()
-    // @IsOptional()
-    // readonly phoneNumber?: string
 
     @ValidateNested({each: true})
     @Type(() => UpdateUserDto)

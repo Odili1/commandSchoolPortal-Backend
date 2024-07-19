@@ -1,3 +1,4 @@
+import { IsString } from "class-validator"
 
 
 export class CreateUserDto{
@@ -13,7 +14,13 @@ export class CreateUserDto{
 export class UpdateUserDto {
     readonly userId?: string
     avatar?: string
-    readonly changePassword?: string
+
+    @IsString()
+    readonly newPassword?: string
+
+    @IsString()
+    readonly confirmPassword?: string
+
     readonly email?: string
     readonly phoneNumber?: string
 }

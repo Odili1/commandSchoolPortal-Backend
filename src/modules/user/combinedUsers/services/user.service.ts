@@ -66,8 +66,34 @@ export class UserService{
         }
     }
 
-    async updateLastLogin(userId: number): Promise<void> {
-        await this.userRepository.update(userId, { lastLogin: new Date() });
+    async getUserById(userId: string): Promise<IUser> {
+        try {
+          const user = this.userRepository.findOne({
+            where: { userId: userId },
+          });
+    
+          if (user === null) {
+            console.log('this is an error');
+            
+            throw new NotFoundException('Invalid Credentials');
+          }
+          console.log(`getAdminById: ${JSON.stringify(user)}`)
+          return user;
+        } catch (error) {
+          if (error instanceof NotFoundException) {
+            throw new NotFoundException(error);
+          }
+    
+          if (error instanceof BadRequestException) {
+            throw new BadRequestException(error);
+          }
+    
+          throw new InternalServerErrorException(`ISE$Ad2: Internal Server Error ${error}`);
+        }
+    }
+
+    async updateLastLogin(userId: string): Promise<void> {
+        await this.userRepository.createQueryBuilder().update(User).set({lastLogin: new Date()}).where('userId = :userId', {userId: userId}).execute()
     }
 
     async updateUser(updateData: UpdateUserDto, file?: Express.Multer.File): Promise<IUser>{
