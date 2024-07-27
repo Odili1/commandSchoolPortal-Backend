@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   Post,
   Put,
@@ -42,10 +43,26 @@ export class AdminController {
     }
   }
 
+  @Get('all')
+  async getStudents(): Promise<IAdmin[]>{
+    try {
+      console.log(`Admin Controller: All`)
+      const students = await this.adminService.getAllAdmins()
+
+      return students
+    } catch (error) {
+      if (error instanceof NotFoundException){
+          throw new NotFoundException(error)
+      }
+
+      throw new Error(error)
+    }
+  }
+  
   @Get(':id')
   async getStudent(@Param('id') adminId:string): Promise<IAdmin>{
     try {
-      console.log(`StudentController id: ${adminId}`)
+      console.log(`AdminController id: ${adminId}`)
       // Check Id Input
       const idPrefix = idPrefixFunc(adminId)
       if (!validIdPrefix(idPrefix)){
@@ -63,6 +80,7 @@ export class AdminController {
       throw new Error(error)
     }
   }
+
 
   @Put('/update/:userId')
   @UseInterceptors(FileInterceptor('avatar'))

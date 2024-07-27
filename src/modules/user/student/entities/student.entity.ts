@@ -8,6 +8,13 @@ export enum Gender{
     female='female',
 }
 
+export enum Category{
+    officer = 'officer',
+    soldier = 'soldier',
+    staff = 'staff',
+    civilian = 'civilian'
+}
+
 @Entity()
 export class Student extends BaseEntity{
     @PrimaryGeneratedColumn()
@@ -39,6 +46,9 @@ export class Student extends BaseEntity{
 
     @Column({nullable: true})
     stateOfOrigin: string
+
+    @Column({nullable: true, type: 'enum', enum: Category})
+    category: Category
 
     @OneToOne(() => User, (user) => user.student)
     @JoinColumn({name: 'userDetails'})

@@ -1,10 +1,11 @@
-import { BadRequestException, Body, Controller, Get, Put, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Param, Put, UseGuards, UseInterceptors } from "@nestjs/common";
 import { User } from "../entities/user.entity";
 import { UserService } from "../services/user.service";
 import { Role } from "src/common/decorators/role.decorator";
 import { RoleGuard } from "src/common/guards/role.guard";
 import { UpdateUserDto } from "../../dtos/user.dto";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { IUser } from "../../interfaces/users.interface";
 
 
 
@@ -22,6 +23,11 @@ export class UserController{
     @Get('all')
     async getAllUsers(): Promise<User[]>{
         return await this.userService.getAllUser()
+    }
+
+    @Get(':userId')
+    async getUser(@Param('userId') userId: string): Promise<IUser>{
+        return await this.userService.getUserById(userId)
     }
 
     @Put('/update')

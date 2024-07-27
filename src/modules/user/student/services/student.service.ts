@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Student } from '../entities/student.entity';
 import { Repository } from 'typeorm';
 import { UserService } from '../../combinedUsers/services/user.service';
-import { CreateStudentDto } from '../../dtos/student.dto';
+import { CreateStudentDto, UpdateStudentDto } from '../../dtos/student.dto';
 import { IStudent } from '../../interfaces/users.interface';
 import { instanceToPlain } from 'class-transformer';
 import { calculateAge } from 'src/common/helpers/dates.helper';
@@ -16,6 +16,7 @@ export class StudentService {
         private userService: UserService,
     ) {}
 
+    // NEW STUDENT
     async createStudent(createStudentDto: CreateStudentDto): Promise<any> {
         try {
         console.log(`Create Student Service: ${JSON.stringify(createStudentDto)}`);
@@ -81,6 +82,7 @@ export class StudentService {
         }  
     }
 
+    // FETCHING STUDENT BY ID FROM THE DB
     async getStudentById(studentId: string): Promise<IStudent> {
         try {
             const studentUser = this.studentRepository.findOne({
@@ -108,6 +110,7 @@ export class StudentService {
         }
     }
 
+    // FETCHING ALL STUDENTS FROM DB
     async getAllStudents():Promise<any>{
         try{
             const students = await this.studentRepository.find({relations: ['user']})
@@ -125,5 +128,55 @@ export class StudentService {
 
             throw new InternalServerErrorException('ISE$St3: Internal Server Error');
         }
+    }
+
+    // UPDATE STUDENT ENTERIES
+    async updateStudent(userId: string, studentProfileDto: UpdateStudentDto, file?: Express.Multer.File): Promise<any>{
+        try {
+            console.log(`Student Service => file received: ${JSON.stringify(file)}`);
+            console.log(`Student Service => DTO received: ${JSON.stringify(studentProfileDto)}`);
+            const {firstName, lastName, middleName, dateOfBirth, stateOfOrigin, address, user} = studentProfileDto
+        
+            const updateUserObject = {
+                userId,
+                email: user['email'] || null,
+                phoneNumber: user['phoneNumber'] || null
+            }
+        
+            // Update the user in the user table
+            const updatedUser = await this.userService.updateUser(updateUserObject, file)
+        
+            // Update user in the Admin table
+            const studentUser = await this.studentRepository.findOne({where: {userId: userId}})
+            
+            if (!studentUser) {
+                throw new NotFoundException(`User with ID ${userId} not found`);
+            }
+        
+            // Save update
+            const update = {
+                ...studentUser, 
+                firstName, 
+                lastName, 
+                middleName: middleName || null, 
+                dateOfBirth: dateOfBirth || null,
+                stateOfOrigin: stateOfOrigin || null,
+                address: address || null,
+                user: updatedUser
+            }
+
+            const saveStudentUser = await this.studentRepository.save(update)
+            console.log(`Updated User: ${saveStudentUser}`);
+            
+        
+            return instanceToPlain(saveStudentUser)
+        } catch (error) {
+            if (error instanceof NotFoundException){
+                throw new NotFoundException(error)
+            }
+            console.log(`Error: ${error}`);
+            
+            throw new InternalServerErrorException(`ISE$St4: Internal Server Error: ${error}`)
+        }   
     }
 }

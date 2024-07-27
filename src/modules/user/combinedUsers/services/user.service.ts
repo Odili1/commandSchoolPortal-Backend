@@ -20,7 +20,7 @@ export class UserService{
         private cloudinaryService: CloudinaryService
     ){}
 
-
+    // NEW USER
     async createUser(createUserDto: CreateUserDto){
         try {
             // Create user in the user's table
@@ -46,6 +46,7 @@ export class UserService{
         }
     }
 
+    // FETCHING ALL USERS FROM DB
     async getAllUser(): Promise<any>{
         try {
             const users = await this.userRepository.find({relations: ['admin', 'teacher', 'student']})
@@ -66,6 +67,7 @@ export class UserService{
         }
     }
 
+    // FETCH A USER BY ID FROM DB
     async getUserById(userId: string): Promise<IUser> {
         try {
           const user = this.userRepository.findOne({
@@ -92,10 +94,12 @@ export class UserService{
         }
     }
 
+    // UPDATE LAST LOGGED IN
     async updateLastLogin(userId: string): Promise<void> {
         await this.userRepository.createQueryBuilder().update(User).set({lastLogin: new Date()}).where('userId = :userId', {userId: userId}).execute()
     }
 
+    // UPDATE USER ENTERY
     async updateUser(updateData: UpdateUserDto, file?: Express.Multer.File): Promise<IUser>{
         try {
             console.log(`User Service => file received: ${JSON.stringify(file)}`);
