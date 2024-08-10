@@ -78,7 +78,7 @@ export class StudentService {
 
         return savedStudent;
         } catch (error) {
-        throw new InternalServerErrorException('ISE$St1: Internal Server Error');
+        throw new InternalServerErrorException(`ISE$St1: Internal Server Error: ${error}`);
         }  
     }
 
@@ -106,7 +106,7 @@ export class StudentService {
                 throw new BadRequestException(error);
             }
         
-            throw new InternalServerErrorException('ISE$St2: Internal Server Error');
+            throw new InternalServerErrorException(`ISE$St2: Internal Server Error: ${error}`);
         }
     }
 
@@ -126,7 +126,7 @@ export class StudentService {
                 throw new NotFoundException(error);
             }
 
-            throw new InternalServerErrorException('ISE$St3: Internal Server Error');
+            throw new InternalServerErrorException(`ISE$St3: Internal Server Error: ${error}`);
         }
     }
 
@@ -135,7 +135,7 @@ export class StudentService {
         try {
             console.log(`Student Service => file received: ${JSON.stringify(file)}`);
             console.log(`Student Service => DTO received: ${JSON.stringify(studentProfileDto)}`);
-            const {firstName, lastName, middleName, dateOfBirth, stateOfOrigin, address, user} = studentProfileDto
+            const {firstName, lastName, middleName, dateOfBirth, gender, stateOfOrigin, address, category, user} = studentProfileDto
         
             const updateUserObject = {
                 userId,
@@ -158,15 +158,18 @@ export class StudentService {
                 ...studentUser, 
                 firstName, 
                 lastName, 
+                gender: gender || null,
+                age: calculateAge(dateOfBirth) || null,
                 middleName: middleName || null, 
                 dateOfBirth: dateOfBirth || null,
                 stateOfOrigin: stateOfOrigin || null,
                 address: address || null,
+                category: category || null,
                 user: updatedUser
             }
-
+            console.log(`User age: ${calculateAge(dateOfBirth)}`)
             const saveStudentUser = await this.studentRepository.save(update)
-            console.log(`Updated User: ${saveStudentUser}`);
+            console.log(`Updated User: ${JSON.stringify(saveStudentUser)}`);
             
         
             return instanceToPlain(saveStudentUser)

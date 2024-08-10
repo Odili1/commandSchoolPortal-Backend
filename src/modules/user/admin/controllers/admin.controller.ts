@@ -27,7 +27,7 @@ export class AdminController {
   constructor(private adminService: AdminService) {}
 
   @Public(true)
-  @Post('/create')
+  @Post('/new-admin')
   async createAdmin(@Body() createAdminDto: CreateAdminDto): Promise<IAdmin> {
     try {
       //   console.log(createAdminDto);
@@ -58,7 +58,7 @@ export class AdminController {
       throw new Error(error)
     }
   }
-  
+
   @Get(':id')
   async getStudent(@Param('id') adminId:string): Promise<IAdmin>{
     try {

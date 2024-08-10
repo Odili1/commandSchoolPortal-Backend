@@ -1,5 +1,5 @@
 import { IsDate, IsEnum, IsOptional, IsString } from 'class-validator';
-import { Gender } from '../student/entities/student.entity';
+import { Category, Gender } from '../student/entities/student.entity';
 import { CreateUserDto, UpdateUserDto } from './user.dto';
 import { IClass, ISubject } from '../interfaces/users.interface';
 import { Type } from 'class-transformer';
@@ -68,6 +68,11 @@ export class UpdateStudentDto {
   @IsString()
   @IsOptional()
   readonly address?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsEnum(Category)
+  readonly category?: Category
 
   @IsOptional()
   @Type(() => UpdateUserDto)

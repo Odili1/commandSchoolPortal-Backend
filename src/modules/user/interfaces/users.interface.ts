@@ -20,10 +20,11 @@ export interface IStudent{
     firstName?: string,
     lastName?: string,
     age?: number,
-    gender?: 'male' | 'female',
+    gender?: 'Male' | 'Female',
     dateOfBirth?: Date,
     address?: string,
     stateOfOrigin?: string,
+    category?: string,
     user: IUser,
     classDetails?: IClass
     subjects?: ISubject[]

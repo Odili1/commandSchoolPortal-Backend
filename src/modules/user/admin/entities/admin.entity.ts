@@ -22,7 +22,7 @@ export class Admin extends BaseEntity {
   @Column()
   lastName: string
 
-  @OneToOne(() => User, (user) => user.admin)
+  @OneToOne(() => User, (user) => user.admin, {onDelete: 'CASCADE'})
   @JoinColumn({name: 'userDetails'})
   user: User
 

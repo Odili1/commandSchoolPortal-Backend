@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Param, Put, UseGuards, UseInterceptors } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, Param, Put, UseGuards, UseInterceptors } from "@nestjs/common";
 import { User } from "../entities/user.entity";
 import { UserService } from "../services/user.service";
 import { Role } from "src/common/decorators/role.decorator";
@@ -52,6 +52,17 @@ export class UserController{
                 throw new BadRequestException(error)
             }
         
+            throw new Error(error)
+        }
+    }
+
+    @Delete('/delete/:userId')
+    async deleteUser(@Param('userId') userId: string): Promise<void>{
+        try {
+            console.log('DeleteUser Controller');
+            
+            return await this.userService.deleteUser(userId)
+        } catch (error) {
             throw new Error(error)
         }
     }

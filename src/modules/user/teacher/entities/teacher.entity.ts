@@ -28,7 +28,7 @@ export class Teacher extends BaseEntity{
     @Column({nullable: true})
     formClass: string
 
-    @OneToOne(() => User, (user) => user.student)
+    @OneToOne(() => User, (user) => user.student, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'userDetails'})
     user: User
 

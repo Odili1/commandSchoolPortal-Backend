@@ -1,6 +1,9 @@
 
 
-export const calculateAge = (dateOfBirth: string | Date) => {
+export const calculateAge = (dateOfBirth: string | Date ) => {
+    if (!dateOfBirth){
+        return null
+    }
     // Parse the input dateOfBirth to a Date object if it is a string
     const dob = new Date(dateOfBirth);
     const today = new Date();

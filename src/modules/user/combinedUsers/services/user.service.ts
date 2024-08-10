@@ -90,13 +90,17 @@ export class UserService{
             throw new BadRequestException(error);
           }
     
-          throw new InternalServerErrorException(`ISE$Ad2: Internal Server Error ${error}`);
+          throw new InternalServerErrorException(`ISE$USER3: Internal Server Error ${error}`);
         }
     }
 
     // UPDATE LAST LOGGED IN
     async updateLastLogin(userId: string): Promise<void> {
-        await this.userRepository.createQueryBuilder().update(User).set({lastLogin: new Date()}).where('userId = :userId', {userId: userId}).execute()
+        try {
+            await this.userRepository.createQueryBuilder().update(User).set({lastLogin: new Date()}).where('userId = :userId', {userId: userId}).execute()
+        } catch (error) {
+            throw new InternalServerErrorException(`ISE$USER4: Internal Server Error ${error}`);
+        }
     }
 
     // UPDATE USER ENTERY
@@ -162,7 +166,24 @@ export class UserService{
                 throw new NotFoundException(error)
             }
 
-            throw new InternalServerErrorException(error)
+            throw new InternalServerErrorException(`ISE$USER5: Internal Server Error ${error}`);
+        }
+    }
+
+
+    // DELETE USER DATA
+    async deleteUser(userId: string): Promise<void>{
+        try {
+            const user = await this.userRepository.delete({userId})
+            if (user.affected === 0){
+                throw new NotFoundException(`User with ID ${userId} not found`)
+            }
+        } catch (error) {
+            if (error instanceof NotFoundException){
+                throw new NotFoundException(error)
+            }
+
+            throw new InternalServerErrorException(`ISE$USER6: Internal Server Error ${error}`);
         }
     }
 }

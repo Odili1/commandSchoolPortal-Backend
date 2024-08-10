@@ -4,15 +4,15 @@ import { Subject } from "src/modules/subject/entities/subject.entity";
 import { Class } from "src/modules/class/entities/class.entity";
 
 export enum Gender{
-    male='male',
-    female='female',
+    male='Male',
+    female='Female',
 }
 
 export enum Category{
-    officer = 'officer',
-    soldier = 'soldier',
-    staff = 'staff',
-    civilian = 'civilian'
+    officer = 'Officer',
+    soldier = 'Soldier',
+    staff = 'Staff',
+    civilian = 'Civilian'
 }
 
 @Entity()
@@ -35,7 +35,7 @@ export class Student extends BaseEntity{
     @Column({nullable: true})
     age: number
 
-    @Column({type: 'enum', enum: Gender})
+    @Column({type: 'enum', enum: Gender, nullable: true})
     gender: Gender
 
     @Column({nullable: true})
@@ -50,7 +50,7 @@ export class Student extends BaseEntity{
     @Column({nullable: true, type: 'enum', enum: Category})
     category: Category
 
-    @OneToOne(() => User, (user) => user.student)
+    @OneToOne(() => User, (user) => user.student, {onDelete: 'CASCADE'})
     @JoinColumn({name: 'userDetails'})
     user: User
 
