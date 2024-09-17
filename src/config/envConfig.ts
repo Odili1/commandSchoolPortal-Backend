@@ -25,6 +25,7 @@ export const envConfig = {
   DB_TYPE: getEnvString('DB_TYPE'),
   DB_PASSWORD: getEnvString('DB_PASSWORD'),
   DB_PORT: getEnvNumber('DB_PORT', 3306),
+  DB_SSL: getEnvString('DB_SSL'),
   JWT_SECRET: getEnvString('JWT_SECRET'),
   CLOUDINARY_NAME: getEnvString('CLOUDINARY_NAME'),
   CLOUDINARY_API_KEY: getEnvString('CLOUDINARY_API_KEY'),
